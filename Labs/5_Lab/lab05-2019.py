@@ -51,7 +51,7 @@ def replace_all(d, x, y):
     "*** YOUR CODE HERE ***"
     # Was looking into one line for loops and stuff, so its a mess    
     r = {i: d[i] if d[i] != x else y for i in d }
-    return 
+    return r
 # RQ4
 def sumdicts(lst):
     """ 
@@ -81,9 +81,45 @@ def middle_tweet(word, table):
     Returns a string that is a random sentence of average length starting with word, and choosing successors from table.
     """
     "*** YOUR CODE HERE ***"
-    # Inputing some of the code from the lab
-    def shakespeare_tokens(path='shakespeare.txt', url='http://composingprograms.com/shakespeare.txt'):
-    """Return the words of Shakespeare's plays as a list."""
+    def construct_tweet(word, table):
+        """Returns a string that is a random sentence starting with word, and choosing successors from table.
+        """
+        import random
+        result = ' '
+        while word not in ['.', '!', '?']:
+            result += word + ' '
+            word = random.choice(table[word])
+        return result + word
+
+    from math import ceil
+    current_list = []
+    # Call construct tweet 5 times into a list
+    # So that it then has 5 sentances of the length of 
+    for i in range(0,5):
+        current_list.append(construct_tweet(word, table))
+    # Sort by length
+    for i in range(0, len(current_list)):
+        for j in range(0, len(current_list)):
+            # Now begin to sort the lests by length
+            if len(current_list[i]) > len(current_list[j]):
+                temp = current_list[i]
+                current_list[i] = current_list[j]
+                current_list[j] = temp
+    # The return the central most one, this serves as the median(which is an average type) of the 
+    # list lengths
+    return current_list[ceil(len(current_list)/2)]
+    
+
+
+    
+
+import doctest
+if __name__ == "__main__":
+  doctest.testmod(verbose=True)
+
+# Inputing some of the code from the lab
+def shakespeare_tokens(path='shakespeare.txt', url='http://composingprograms.com/shakespeare.txt'):
+    #"""Return the words of Shakespeare's plays as a list."""
     import os
     from urllib.request import urlopen
     if os.path.exists(path):
@@ -91,7 +127,7 @@ def middle_tweet(word, table):
     else:
         shakespeare = urlopen(url)
         return shakespeare.read().decode(encoding='ascii').split()
-    def build_successors_table(tokens):
+def build_successors_table(tokens):
     table = {}
     prev = '.'
     for word in tokens:
@@ -100,8 +136,3 @@ def middle_tweet(word, table):
         table[prev] += [word]
         prev = word
     return table
-
-
-import doctest
-if __name__ == "__main__":
-  doctest.testmod(verbose=True)
